@@ -9,7 +9,7 @@ use FOS\UserBundle\Model\User as AbstractUser;
  * RefCode
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Ars\RefTrackerBundle\Entity\RefCodeRepository")
+ * @ORM\Entity()
  */
 class RefCode
 {

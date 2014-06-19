@@ -9,7 +9,7 @@ use FOS\UserBundle\Model\User as AbstractUser;
  * RefHit
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Ars\RefTrackerBundle\Entity\RefHitRepository")
+ * @ORM\Entity()
  */
 class RefHit
 {

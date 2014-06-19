@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * RefData
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Ars\RefTrackerBundle\Entity\RefDataRepository")
+ * @ORM\Entity()
  */
 class RefData
 {
