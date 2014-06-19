@@ -1,0 +1,13 @@
+
+services:
+    ars_user.registration.form.type:
+        class: Ars\UserBundle\Form\Type\RegistrationFormType
+        arguments: [%fos_user.model.user.class%]
+        tags:
+            - { name: form.type, alias: ars_user_registration }
+
+    ars_user.profile.form.type:
+        class: Ars\UserBundle\Form\Type\ProfileFormType
+        arguments: [%fos_user.model.user.class%]
+        tags:
+            - { name: form.type, alias: ars_user_profile }

@@ -1,0 +1,30 @@
+{% extends 'ArsRefTrackerBundle::layout.html.twig' %}
+
+{% block content %}
+    <h2>Yor are logged in as {{ user.getUsername() }}</h2>
+
+    {% if refCode %}
+        <h2>Your ref code: {{ refCode.getCode() }} (simply add to any url ?{{ queryParamName }}={{ refCode.getCode() }})</h2>
+    {% else %}
+        <h2>Your don't have ref code!</h2>
+    {% endif %}
+
+    <h3>Ref stats:</h3>
+
+    <table border="1">
+        <tr>
+            <th>date</th>
+            <th>ip</th>
+            <th>referer</th>
+        </tr>
+    {% for hit in refHits %}
+        <tr>
+            <td>{{ hit.getRefData.getDate()|date('Y-m-d H:i:s') }}&nbsp;</td>
+            <td>{{ hit.getRefData.getIp() }}&nbsp;</td>
+            <td>{{ hit.getRefData.getReferer() }}&nbsp;</td>
+        </tr>
+    {% endfor %}
+
+    </table>
+
+{% endblock %}
