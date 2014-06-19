@@ -2,45 +2,24 @@
 
 namespace Ars\RefTrackerBundle\EventListener;
 
-use Ars\RefTrackerBundle\ArsRefTrackerBundle;
-use Ars\RefTrackerBundle\Entity\RefUser;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\FOSUserEvents;
-use Doctrine\ORM\EntityManager;
-use Ars\RefTrackerBundle\Entity\RefCode;
-use Ars\RefTrackerBundle\Services\UniqIdGenerator;
+use Ars\RefTrackerBundle\Services\RefTrackerManager;
 
 class UserEventsListener implements EventSubscriberInterface
 {
     /**
-     * @var EntityManager
+     * @var RefTrackerManager
      */
-    private $em;
+    private $refTrackerManager;
 
     /**
-     * @var UniqCodeGenerator
+     * @param RefTrackerManager $manager
      */
-    private $uniqIdGenerator;
-
-    /**
-     * @var string
-     */
-    private $cookieName;
-
-    public function __construct($cookieName)
+    public function __construct(RefTrackerManager $manager)
     {
-        $this->cookieName = $cookieName;
-    }
-
-    public function setEm(EntityManager $em)
-    {
-        $this->em = $em;
-    }
-
-    public function setUniqIdGenerator(UniqIdGenerator $uniqIdGenerator)
-    {
-        $this->uniqIdGenerator = $uniqIdGenerator;
+        $this->refTrackerManager = $manager;
     }
 
     public static function getSubscribedEvents()
@@ -55,31 +34,8 @@ class UserEventsListener implements EventSubscriberInterface
         $user = $event->getUser();
         $request = $event->getRequest();
 
-        do {//while code is not uniq - generate next one
-            $uniqId = $this->uniqIdGenerator->generate();
-            $isUsed = (bool) $this->em->getRepository('ArsRefTrackerBundle:RefCode')->findOneByCode($uniqId);
-        } while ($isUsed);
-
-        //assign new refCode to new user
-        $refCode = new RefCode();
-        $refCode->setCode($uniqId)
-                ->setUser($user);
-
-        $this->em->persist($refCode);
-
-        //assign ref hit (ref data + ref code) for user if preset
-        $cookieValue = $request->cookies->get($this->cookieName);
-        $refHit = $this->em->getRepository('ArsRefTrackerBundle:RefHit')->findOne($cookieValue);
-        if ($refHit) {
-            $refUser = new RefUser();
-            $refUser->setRefHit($refHit)
-                    ->setRefUser($user);
-
-            $this->em->persist($refUser);
-        }
-
-        $this->em->flush();
-
+        $this->refTrackerManager->assignCodeToUser($user);
+        $this->refTrackerManager->assignRefToUser($request, $user);
     }
 
 }

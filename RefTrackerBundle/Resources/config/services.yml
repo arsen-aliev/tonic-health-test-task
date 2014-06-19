@@ -3,19 +3,20 @@ services:
         class: Ars\RefTrackerBundle\EventListener\RequestListener
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
-        arguments: [%ars_ref_tracker.query_param_name%, %ars_ref_tracker.cookie_name%, %ars_ref_tracker.cookie_ttl%]
-        calls:
-            - [setEm, [@doctrine.orm.entity_manager]]
-            - [setRouter, [@router]]
+        arguments: [@ars_ref_tracker.ref_tracker_manager, @router]
 
     ars_ref_tracker.user_events_listener:
         class: Ars\RefTrackerBundle\EventListener\UserEventsListener
         tags:
             - { name: kernel.event_subscriber }
-        arguments: [%ars_ref_tracker.cookie_name%]
-        calls:
-            - [setEm, [@doctrine.orm.entity_manager]]
-            - [setUniqIdGenerator, [@ars_ref_tracker.uniq_id_generator]]
+        arguments: [@ars_ref_tracker.ref_tracker_manager]
 
     ars_ref_tracker.uniq_id_generator:
         class: Ars\RefTrackerBundle\Services\UniqIdGenerator
+
+    ars_ref_tracker.ref_tracker_manager:
+        class: Ars\RefTrackerBundle\Services\RefTrackerManager
+        arguments: [%ars_ref_tracker.query_param_name%, %ars_ref_tracker.cookie_name%, %ars_ref_tracker.cookie_ttl%]
+        calls:
+            - [setEm, [@doctrine.orm.entity_manager]]
+            - [setUniqIdGenerator, [@ars_ref_tracker.uniq_id_generator]]
